@@ -277,6 +277,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  redux_persist:
+    dependency: "direct main"
+    description:
+      name: redux_persist
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0-rc.2"
+  redux_persist_flutter:
+    dependency: "direct main"
+    description:
+      name: redux_persist_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.0-rc.1"
+  shared_preferences:
+    dependency: transitive
+    description:
+      name: shared_preferences
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.2"
   shelf:
     dependency: transitive
     description:

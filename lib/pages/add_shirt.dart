@@ -8,20 +8,31 @@ import 'package:image_picker/image_picker.dart';
 
 class AddShirtModal extends StatelessWidget {
   Widget _thumbnailWidget(BuildContext context, _AddShirtViewModel viewModel) {
-    if (viewModel.image != null) {
-      return new SizedBox(
-        child: new Image.file(new File(viewModel.image)),
-        width: 32.0,
-        height: 32.0,
-      );
-    }
-
     return PopupMenuButton<ImageSource>(
-      child: new CircleAvatar(
-        child: const Icon(Icons.image, size: 32.0),
-        backgroundColor: Colors.grey.shade300,
-        foregroundColor: Colors.grey.shade600,
+      padding: const EdgeInsets.all(64.0),
+      child: new Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: viewModel.image == null
+        ? new CircleAvatar(
+          child: const Icon(Icons.image, size: 128.0),
+          backgroundColor: Colors.grey.shade300,
+          foregroundColor: Colors.grey.shade600,
+          radius: 128.0,
+        )
+        : new Container(
+            width: 256.0,
+            height: 256.0,
+            decoration: new BoxDecoration(
+              shape: BoxShape.circle,
+              image: new DecorationImage(
+                fit: BoxFit.cover,
+                image: new FileImage(new File(viewModel.image))
+              )
+            )
+          )
       ),
+      
+
       itemBuilder: (context) {
         return [
           new PopupMenuItem(
@@ -57,20 +68,21 @@ class AddShirtModal extends StatelessWidget {
     return new Container(
       child: new ListView(
         children: <Widget>[
+          new Center(
+            child: _thumbnailWidget(context, viewModel),
+          ),
           new ListTile(
-            leading: _thumbnailWidget(context, viewModel),
             title: new TextField(
               decoration: new InputDecoration(hintText: 'Name'),
-              onSubmitted: (value) {
-                print(value);
+              onChanged: (value) {
+                viewModel.updateName(value);
               },
             ),
           ),
           new CheckboxListTile(
             value: false,
             title: const Text('Buttonable'),
-            onChanged: (value) {
-            },
+            onChanged: (value) => viewModel.updateButtonable(value)
           )
         ],
       ),
@@ -87,22 +99,38 @@ class AddShirtModal extends StatelessWidget {
           appBar: new AppBar(
             title: const Text('Add Shirt'),
             actions: <Widget>[
-              new FlatButton(
-                child: new IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                  },
-                ),
-                onPressed: () async {
-                  // _formKey.currentState.validate();
+              new IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  final error = _validateNewShirt(viewModel);
+
+                  if (error == null) {
+                    viewModel.addShirt();
+                    Navigator.of(context).pop();
+                  } else {
+                    final snackBar = SnackBar(content: new Text(error));
+                    Scaffold.of(context).showSnackBar(snackBar);
+                  }
                 },
-              )
+              ),
             ],
           ),
           body: _buildBody(context, viewModel),
         );
       }
     );
+  }
+
+  String _validateNewShirt(_AddShirtViewModel viewModel) {
+    if (viewModel.image.isEmpty) {
+      return 'Please select an image.';
+    }
+
+    if (viewModel.name.isEmpty) {
+      return 'Please enter in a name';
+    }
+
+    return null;
   }
 }
 
@@ -111,20 +139,29 @@ class _AddShirtViewModel {
     this.name,
     this.image,
     this.buttonable,
-    this.updateImage
+    this.updateImage,
+    this.updateName,
+    this.updateButtonable,
+    this.addShirt
   });
 
   final String name;
   final String image;
   final bool buttonable;
   final UpdateImageCallback updateImage;
+  final UpdateNameCallback updateName;
+  final UpdateButtonableCallback updateButtonable;
+  final Function addShirt;
 
   factory _AddShirtViewModel.create(Store<AppState> store) {
     return new _AddShirtViewModel(
-      name: '',
-      image: store.state.newShirtImage,
-      buttonable: false,
-      updateImage: (image) => store.dispatch(new UpdateNewShirtImage(image))
+      name: store.state.newShirt.name,
+      image: store.state.newShirt.image,
+      buttonable: store.state.newShirt.buttonable,
+      updateImage: (image) => store.dispatch(new UpdateNewShirtImage(image)),
+      updateName: (name) => store.dispatch(new UpdateNewShirtName(name)),
+      updateButtonable: (buttonable) => store.dispatch(new UpdateNewShirtButtonable(buttonable)),
+      addShirt: () => store.dispatch(new AddShirtAction())
     );
   }
 
@@ -144,6 +181,8 @@ class _AddShirtViewModel {
 }
 
 typedef UpdateImageCallback = Function(String);
+typedef UpdateNameCallback = Function(String);
+typedef UpdateButtonableCallback = Function(bool);
 
 // class CameraPreviewModal extends StatefulWidget {
 //   CameraPreviewModal(this.cameras);
