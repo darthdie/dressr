@@ -16,12 +16,12 @@ class AccessoryGridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageFile = new File(accessory.image);
-
     return new GridTile(
       child: new Material(
         child: new InkWell(
-          child: new Image.file(imageFile),
+          child: new CircleAvatar(
+            backgroundImage: new FileImage(new File(accessory.image)),
+          ),
           onTap: () => onTap(accessory)
         )
       )
@@ -51,6 +51,8 @@ class AccessoriesTab extends StatelessWidget {
 
     return new GridView.count(
       crossAxisCount: 4,
+      padding: const EdgeInsets.all(8.0),
+      crossAxisSpacing: 8.0,
       children: _buildGridTiles(context, viewModel)
     );
   }
