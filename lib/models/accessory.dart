@@ -1,16 +1,11 @@
-import 'package:uuid/uuid.dart';
+import 'package:dressr/models/piece.dart';
 
-class Accessory {
+class Accessory extends Piece {
   Accessory({
     String id,
-    this.name,
-    this.image,
-  }):
-    this.id = id ?? new Uuid().v4();
-
-  final String name;
-  final String image;
-  final String id;
+    String name,
+    String image,
+  }): super(PieceType.Accessory, id: id, name: name, image: image);
 
   Accessory copyWith({
     String name,
@@ -21,14 +16,6 @@ class Accessory {
       name: name ?? this.name,
       image: image ?? this.image,
     );
-  }
-
-  Map toJson() {
-    return {
-      'name': name,
-      'image': image,
-      'id': id
-    };
   }
 
   factory Accessory.fromJson(Map json) {

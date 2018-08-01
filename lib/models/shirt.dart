@@ -1,19 +1,18 @@
 import 'package:built_collection/built_collection.dart';
+import 'package:dressr/models/piece.dart';
 
-class Shirt {
+class Shirt extends Piece {
   Shirt({
-    this.name,
-    this.image,
+    String id,
+    String name,
+    String image,
     bool buttonable,
-    BuiltList<String> accessories
-  }):
-    this.accessories = accessories ?? new BuiltList(),
-    this.buttonable = buttonable ?? false;
+    BuiltList<String> pieces
+  }): 
+    this.buttonable = buttonable ?? false,
+    super(PieceType.Shirt, id: id, name: name, image: image, pieces: pieces);
 
-  final String name;
-  final String image;
   final bool buttonable;
-  final BuiltList<String> accessories;
 
   Shirt copyWith({
     String name,
@@ -22,20 +21,19 @@ class Shirt {
     BuiltList<String> accessories,
   }) {
     return new Shirt(
+      id: id,
       name: name ?? this.name,
       image: image ?? this.image,
       buttonable: buttonable ?? this.buttonable,
-      accessories: accessories ?? this.accessories
+      pieces: pieces ?? this.pieces
     );
   }
 
   Map toJson() {
-    return {
-      'name': name,
-      'image': image,
+    return super.toJson()
+    ..addAll({
       'buttonable': buttonable,
-      'accessories': accessories.toList(),
-    };
+    });
   }
 
   factory Shirt.fromJson(Map json) {
@@ -43,7 +41,7 @@ class Shirt {
       name: json['name'],
       image: json['image'],
       buttonable: json['buttonable'],
-      accessories: new BuiltList(json['accessories'])
+      pieces: new BuiltList(json['accessories'])
     );
   }
 }
