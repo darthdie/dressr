@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:dressr/models/piece.dart';
 
 class Shirt extends Piece {
@@ -7,10 +6,9 @@ class Shirt extends Piece {
     String name,
     String image,
     bool buttonable,
-    BuiltList<String> pieces
   }): 
     this.buttonable = buttonable ?? false,
-    super(PieceType.Shirt, id: id, name: name, image: image, pieces: pieces);
+    super(PieceType.Shirt, id: id, name: name, image: image);
 
   final bool buttonable;
 
@@ -18,14 +16,12 @@ class Shirt extends Piece {
     String name,
     String image,
     bool buttonable,
-    BuiltList<String> accessories,
   }) {
     return new Shirt(
       id: id,
       name: name ?? this.name,
       image: image ?? this.image,
       buttonable: buttonable ?? this.buttonable,
-      pieces: pieces ?? this.pieces
     );
   }
 
@@ -41,7 +37,6 @@ class Shirt extends Piece {
       name: json['name'],
       image: json['image'],
       buttonable: json['buttonable'],
-      pieces: new BuiltList(json['accessories'])
     );
   }
 }

@@ -14,14 +14,12 @@ class Piece {
     bool buttonable,
     BuiltList<String> pieces
   }):
-    this.pieces = pieces ?? new BuiltList(),
     this.id = id ?? new Uuid().v4();
 
   final PieceType type;
 
   final String name;
   final String image;
-  final BuiltList<String> pieces;
   final String id;
 
   Map toJson() {
@@ -29,7 +27,6 @@ class Piece {
       'type': type.toString(),
       'name': name,
       'image': image,
-      'pieces': pieces.toList(),
     };
   }
 }

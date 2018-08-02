@@ -4,6 +4,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:dressr/app_state.dart';
 import 'package:dressr/models/shirt.dart';
 import 'package:dressr/pages/add_shirt.dart';
+import 'package:dressr/pages/shirt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -32,13 +33,14 @@ class ShirtGridTile extends StatelessWidget {
 class ShirtsTab extends StatelessWidget {
   const ShirtsTab() : super();
 
-  void handleGridTileTapped(Shirt shirt) {
-
+  void handleGridTileTapped(BuildContext context, _ShirtsTabViewModel viewModel, Shirt shirt) {
+    viewModel.selectShirt(shirt);
+    Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new ShirtPage()));
   }
 
   List<Widget> _buildGridTiles(BuildContext context, _ShirtsTabViewModel viewModel) {
     return viewModel.shirts
-    .map((shirt) => new ShirtGridTile(shirt: shirt, onTap: handleGridTileTapped))
+    .map((shirt) => new ShirtGridTile(shirt: shirt, onTap: (shirt) => handleGridTileTapped(context, viewModel, shirt)))
     .toList();
   }
 
@@ -79,14 +81,17 @@ class ShirtsTab extends StatelessWidget {
 
 class _ShirtsTabViewModel {
   _ShirtsTabViewModel({
-    this.shirts
+    this.shirts,
+    this.selectShirt,
   });
 
   final BuiltList<Shirt> shirts;
+  final SelectShirtFunction selectShirt;
 
   factory _ShirtsTabViewModel.create(Store<AppState> store) {
     return new _ShirtsTabViewModel(
-      shirts: store.state.shirts
+      shirts: store.state.shirts,
+      selectShirt: (shirt) => store.dispatch(new SelectShirtAction(shirt)),
     );
   }
 
@@ -100,3 +105,5 @@ class _ShirtsTabViewModel {
   int get hashCode =>
     shirts.hashCode;
 }
+
+typedef SelectShirtFunction = Function(Shirt);

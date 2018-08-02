@@ -78,6 +78,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
+  cupertino_segment_control:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: a9baf4a22860aed0fb9dc6733c49aacc8ea4ef60
+      url: "https://github.com/metaflowltd/flutter_cupertino_segment_control.git"
+    source: git
+    version: "0.0.3"
   flutter:
     dependency: "direct main"
     description: flutter

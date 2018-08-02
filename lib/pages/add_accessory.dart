@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:built_collection/built_collection.dart';
 import 'package:dressr/app_state.dart';
-import 'package:dressr/models/accessory.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -33,7 +31,7 @@ class AddAccessoryModal extends StatelessWidget {
       )
     ];
 
-    final image = viewModel.image == null
+    final image = viewModel.image.isEmpty
       ? new CircleAvatar(
         child: const Icon(Icons.image, size: 128.0),
         backgroundColor: Colors.grey.shade300,
@@ -93,18 +91,22 @@ class AddAccessoryModal extends StatelessWidget {
       distinct: true,
       converter: (store) => _AddAccessoryViewModel.create(store),
       builder: (context, viewModel) {
-        final addButton = new IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            final error = _validateNewAccessory(viewModel);
+        final addButton = new Builder(
+          builder: (context) {
+            return new IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                final error = _validateNewAccessory(viewModel);
 
-            if (error == null) {
-              viewModel.addAccessory();
-              Navigator.of(context).pop();
-            } else {
-              final snackBar = SnackBar(content: new Text(error));
-              Scaffold.of(context).showSnackBar(snackBar);
-            }
+                if (error == null) {
+                  viewModel.addAccessory();
+                  Navigator.of(context).pop();
+                } else {
+                  final snackBar = SnackBar(content: new Text(error));
+                  Scaffold.of(context).showSnackBar(snackBar);
+                }
+              },
+            );
           },
         );
 
@@ -149,11 +151,11 @@ class _AddAccessoryViewModel {
 
   factory _AddAccessoryViewModel.create(Store<AppState> store) {
     return new _AddAccessoryViewModel(
-      name: store.state.newAccessory.name,
-      image: store.state.newAccessory.image,
+      name: store.state.newAccessory.name ?? '',
+      image: store.state.newAccessory.image ?? '',
       updateImage: (image) => store.dispatch(new UpdateNewAccessoryImage(image)),
       updateName: (name) => store.dispatch(new UpdateNewAccessoryName(name)),
-      addAccessory: () => store.dispatch(new AddAccessoryAction())
+      addAccessory: () => store.dispatch(new AddOrUpdatePieceAction(store.state.newAccessory))
     );
   }
 

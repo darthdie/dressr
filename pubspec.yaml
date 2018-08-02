@@ -18,6 +18,9 @@ dependencies:
   redux_persist: 0.7.0-rc.2
   uuid: 1.0.0
 
+  cupertino_segment_control:
+    git: https://github.com/metaflowltd/flutter_cupertino_segment_control.git
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

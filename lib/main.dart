@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Dressr',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.brown,
       ),
       home: new HomePage(),
     );

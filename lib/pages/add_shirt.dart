@@ -5,6 +5,8 @@ import 'package:built_collection/built_collection.dart';
 import 'package:dressr/app_state.dart';
 import 'package:dressr/models/accessory.dart';
 import 'package:dressr/pages/add_accessory.dart';
+import 'package:dressr/pages/select_piece/select_piece.dart';
+import 'package:dressr/widgets/piece_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -35,7 +37,7 @@ class AddShirtModal extends StatelessWidget {
       )
     ];
 
-    final image = viewModel.image == null
+    final image = viewModel.image.isEmpty
       ? new CircleAvatar(
         child: const Icon(Icons.image, size: 128.0),
         backgroundColor: Colors.grey.shade300,
@@ -72,88 +74,54 @@ class AddShirtModal extends StatelessWidget {
     );
   }
 
-  Future<String> showAddAccessory(BuildContext context, _AddShirtViewModel viewModel) {
-    return showModalBottomSheet<String>(
-      context: context,
-      builder: (context) {
-        return new StoreConnector<AppState, BuiltList<Accessory>>(
-          converter: (store) => new BuiltList(store.state.accessories.where((a) => !store.state.newShirt.accessories.contains(a.id))),
-          builder: (context, accessories) {
-            final accessoryWidgets = accessories.map((a) {
-              return new ListTile(
-                title: new Text(a.name),
-                leading: new CircleAvatar(
-                  backgroundImage: new FileImage(new File(a.image)),
-                  radius: 28.0
-                ),
-                onTap: () {
-                  Navigator.of(context).pop(a.id);
-                },
-              );
-            }).toList();
+  Future<String> showAddAccessory(BuildContext context, _AddShirtViewModel viewModel) async {
+    await Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new SelectPieceModal()));
+    return Future.value('');
+    // return showModalBottomSheet<String>(
+    //   context: context,
+    //   builder: (context) {
+    //     return new StoreConnector<AppState, BuiltList<Accessory>>(
+    //       converter: (store) => new BuiltList(store.state.accessories.where((a) => !store.state.newShirt.accessories.contains(a.id))),
+    //       builder: (context, accessories) {
+    //         final accessoryWidgets = accessories.map((a) {
+    //           return new AccessoryTile(
+    //             accessory: a,
+    //             onPressed: () {
+    //               Navigator.of(context).pop(a.id);
+    //             },
+    //           );
+    //         }).toList();
 
-            final addItemButton = new FlatButton(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text('Add New'),
-                  const Icon(Icons.add),
-                ]
-              ),
-              onPressed: () {
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddAccessoryModal()));
-              }
-            );
+    //         final addItemButton = new FlatButton(
+    //           child: new Row(
+    //             mainAxisAlignment: MainAxisAlignment.center,
+    //             children: <Widget>[
+    //               const Text('Add New'),
+    //               const Icon(Icons.add),
+    //             ]
+    //           ),
+    //           onPressed: () {
+    //             Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddAccessoryModal()));
+    //           }
+    //         );
 
-            return new ListView(
-              children: <Widget>[
-                new ListTile(
-                  title: new Text('Accessories', style: Theme.of(context).textTheme.title),
-                  subtitle: new Text('${accessories.length} Accessories'),
-                )
-              ]
-              ..addAll(accessoryWidgets)
-              ..add(addItemButton)
-            );
-          },
-        );
-      }
-    );
+    //         return new ListView(
+    //           children: <Widget>[
+    //             new ListTile(
+    //               title: new Text('Accessories', style: Theme.of(context).textTheme.title),
+    //               subtitle: new Text('${accessories.length} Accessories'),
+    //             )
+    //           ]
+    //           ..addAll(accessoryWidgets)
+    //           ..add(addItemButton)
+    //         );
+    //       },
+    //     );
+    //   }
+    // );
   }
 
   Widget _buildBody(BuildContext context, _AddShirtViewModel viewModel) {
-    final matchItems = viewModel.accessories.map((a) {
-      return new ListTile(
-        leading: new CircleAvatar(
-          backgroundImage: new FileImage(new File(a.image)),
-          radius: 28.0
-        ),
-        title: new Text(a.name),
-        trailing: new IconButton(
-          icon: new Icon(Icons.delete),
-          onPressed: () {
-            viewModel.removeAccessory(a.id);
-          },
-        ),
-      );
-    });
-
-    final addItemButton = new FlatButton(
-      child: new Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Text('Add'),
-          const Icon(Icons.add),
-        ],
-      ),
-      onPressed: () async {
-        final id = await showAddAccessory(context, viewModel);
-        if (id != null) {
-          viewModel.addAccessory(id);
-        }
-      }
-    );
-    
     return new Container(
       child: new ListView(
         children: <Widget>[
@@ -170,13 +138,7 @@ class AddShirtModal extends StatelessWidget {
             title: const Text('Buttonable'),
             onChanged: (value) => viewModel.updateButtonable(value)
           ),
-          new ListTile(
-            title: Text('Goes with...', style: Theme.of(context).textTheme.title),
-          ),
-          const Divider(),
         ]
-        ..addAll(matchItems)
-        ..add(addItemButton)
       ),
     );
   }
@@ -185,7 +147,7 @@ class AddShirtModal extends StatelessWidget {
   Widget build(BuildContext context) {
     return new StoreConnector<AppState, _AddShirtViewModel>(
       distinct: true,
-      converter: (store) => _AddShirtViewModel.create(store),
+      converter: (store) => new _AddShirtViewModel.create(store),
       builder: (context, viewModel) {
         final addShirtButton = new Builder(
           builder: (context) {
@@ -220,11 +182,11 @@ class AddShirtModal extends StatelessWidget {
   }
 
   String _validateNewShirt(_AddShirtViewModel viewModel) {
-    if ((viewModel.image ?? '').isEmpty) {
+    if (viewModel.image.isEmpty) {
       return 'Please select an image.';
     }
 
-    if (viewModel.name.isEmpty) {
+    if ((viewModel.name ?? '').isEmpty) {
       return 'Please enter in a name';
     }
 
@@ -241,7 +203,6 @@ class _AddShirtViewModel {
     this.updateName,
     this.updateButtonable,
     this.addShirt,
-    this.accessories,
     this.addAccessory,
     this.removeAccessory,
   });
@@ -253,20 +214,18 @@ class _AddShirtViewModel {
   final UpdateNameCallback updateName;
   final UpdateButtonableCallback updateButtonable;
   final Function addShirt;
-  final BuiltList<Accessory> accessories;
   final AddAccessoryToShirtCallback addAccessory;
   final RemoveAccessoryToShirtCallback removeAccessory;
 
   factory _AddShirtViewModel.create(Store<AppState> store) {
     return new _AddShirtViewModel(
-      name: store.state.newShirt.name,
-      image: store.state.newShirt.image,
+      name: store.state.newShirt.name ?? '',
+      image: store.state.newShirt.image ?? '',
       buttonable: store.state.newShirt.buttonable,
-      accessories: new BuiltList<Accessory>(store.state.accessories.where((a) => store.state.newShirt.accessories.contains(a.id))),
       updateImage: (image) => store.dispatch(new UpdateNewShirtImage(image)),
       updateName: (name) => store.dispatch(new UpdateNewShirtName(name)),
       updateButtonable: (buttonable) => store.dispatch(new UpdateNewShirtButtonable(buttonable)),
-      addShirt: () => store.dispatch(new AddShirtAction()),
+      addShirt: () => store.dispatch(new AddOrUpdatePieceAction(store.state.newShirt)),
       addAccessory: (id) => store.dispatch(new AddAccessoryToNewShirt(id)),
       removeAccessory: (id) => store.dispatch(new RemoveAccessoryToNewShirt(id)),
     );
@@ -278,15 +237,13 @@ class _AddShirtViewModel {
     o is _AddShirtViewModel &&
     name == o.name &&
     image == o.image &&
-    buttonable == o.buttonable &&
-    accessories == o.accessories;
+    buttonable == o.buttonable;
 
   @override
   int get hashCode =>
     name.hashCode ^
     image.hashCode ^
-    buttonable.hashCode ^
-    accessories.hashCode;
+    buttonable.hashCode;
 }
 
 typedef UpdateImageCallback = Function(String);

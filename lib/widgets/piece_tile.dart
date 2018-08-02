@@ -7,7 +7,7 @@ class PieceTile extends StatelessWidget {
   PieceTile({Key key, this.piece, this.onPressed, this.trailing}) : super(key: key);
 
   final Piece piece;
-  final Function onPressed;
+  final ShirtTileOnPressed onPressed;
   final Widget trailing;
 
   @override
@@ -26,3 +26,5 @@ class PieceTile extends StatelessWidget {
     );
   }
 }
+
+typedef ShirtTileOnPressed = Function();
