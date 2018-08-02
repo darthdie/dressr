@@ -108,6 +108,19 @@ class SelectPieceModal extends StatelessWidget {
                 color: Theme.of(context).primaryColor,
                 activeTabIndex: viewModel.filter.index,
               ),
+              const Divider(),
+              new Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: new TextField(
+                  decoration: new InputDecoration(
+                    hintText: 'Search...',
+                    icon: const Icon(Icons.search),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) => viewModel.changeSearchFilter(value),
+                ),
+              ),
+              const Divider(),
               new Expanded(child: new ListView(children: items))
             ],
           ),
@@ -123,20 +136,33 @@ class _SelectPieceModalViewModel {
     this.accessories,
     this.changeFilter,
     this.filter,
+    this.searchFilter,
+    this.changeSearchFilter,
   });
 
   final BuiltList<Shirt> shirts;
   final BuiltList<Accessory> accessories;
   final Function changeFilter;
   final SelectPieceFilter filter;
+  final String searchFilter;
+  final ChangeSearchFilterCallback changeSearchFilter;
 
   factory _SelectPieceModalViewModel.create(Store<AppState> store) {
     return new _SelectPieceModalViewModel(
-      shirts: store.state.shirts.rebuild((b) => b..where((s) => !store.state.newOutfit.pieces.contains(s.id))),
-      accessories: store.state.accessories.rebuild((b) => b..where((s) => !store.state.newOutfit.pieces.contains(s.id))),
+      shirts: filterPieces(store, store.state.shirts),
+      accessories: filterPieces(store, store.state.accessories),
       changeFilter: (filter) => store.dispatch(new SelectPieceFilterAction(filter)), 
       filter: store.state.selectPieceFilter,
+      searchFilter: store.state.selectPieceSearchFilter,
+      changeSearchFilter: (filter) => store.dispatch(new UpdateSelectPieceSearchFilter(filter)),
     );
+  }
+
+  static BuiltList<Piece> filterPieces(Store<AppState> store, BuiltList<Piece> source) {
+    return source.rebuild((b) => b..where((p) {
+      return !store.state.newOutfit.pieces.contains(p.id) &&
+      store.state.selectPieceSearchFilter.isEmpty || p.name.contains(store.state.selectPieceSearchFilter);
+    }));
   }
 
   @override
@@ -145,11 +171,15 @@ class _SelectPieceModalViewModel {
     o is _SelectPieceModalViewModel &&
     shirts == o.shirts &&
     accessories == o.accessories &&
-    filter == o.filter;
+    filter == o.filter &&
+    searchFilter == o.searchFilter;
 
   @override
   int get hashCode =>
     shirts.hashCode ^
     accessories.hashCode ^
-    filter.hashCode;
+    filter.hashCode ^
+    searchFilter.hashCode;
 }
+
+typedef ChangeSearchFilterCallback = Function(String);

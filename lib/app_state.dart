@@ -15,7 +15,8 @@ class AppState {
     this.selectedShirt,
     Accessory newAccessory,
     SelectPieceFilter selectPieceFilter,
-    Outfit newOutfit
+    Outfit newOutfit,
+    String newOutfitSearchFilter,
   }):
     this.shirts = new BuiltList<Shirt>((pieces ?? new BuiltList<Shirt>()).where((p) => p.type == PieceType.Shirt)),
     this.pieces = pieces ?? new BuiltList<Piece>(),
@@ -24,7 +25,8 @@ class AppState {
     this.newOutfit = newOutfit ?? new Outfit(),
     this.newAccessory = newAccessory ?? new Accessory(),
     this.accessories = new BuiltList<Accessory>((pieces ?? new BuiltList<Accessory>()).where((p) => p.type == PieceType.Accessory)),
-    this.selectPieceFilter = selectPieceFilter ?? SelectPieceFilter.All;
+    this.selectPieceFilter = selectPieceFilter ?? SelectPieceFilter.All,
+    this.selectPieceSearchFilter = newOutfitSearchFilter ?? '';
 
   final BuiltList<Piece> pieces;
   final BuiltList<Outfit> outfits;
@@ -35,6 +37,7 @@ class AppState {
   final Shirt selectedShirt;
   final SelectPieceFilter selectPieceFilter;
   final Outfit newOutfit;
+  final String selectPieceSearchFilter;
 
   AppState copyWith({
     BuiltList<Piece> pieces,
@@ -43,7 +46,8 @@ class AppState {
     Accessory newAccessory,
     Shirt selectedShirt,
     SelectPieceFilter selectPieceFilter,
-    Outfit newOutfit
+    Outfit newOutfit,
+    String newOutfitSearchFilter
   }) {
     return new AppState(
       newShirt: newShirt ?? this.newShirt,
@@ -52,7 +56,8 @@ class AppState {
       outfits: outfits ?? this.outfits,
       selectedShirt: selectedShirt ?? this.selectedShirt,
       selectPieceFilter: selectPieceFilter ?? this.selectPieceFilter,
-      newOutfit: newOutfit ?? this.newOutfit
+      newOutfit: newOutfit ?? this.newOutfit,
+      newOutfitSearchFilter: newOutfitSearchFilter ?? this.selectPieceSearchFilter
     );
   }
 
@@ -151,6 +156,12 @@ class UpdateNewOutfit {
   final Outfit outfit;
 }
 
+class UpdateSelectPieceSearchFilter {
+  UpdateSelectPieceSearchFilter(this.filter);
+
+  final String filter;
+}
+
 AppState appStateReducer(AppState state, dynamic action) {
   if (action is PersistLoadedAction<AppState>) {
     return action.state ?? state;
@@ -176,12 +187,16 @@ AppState appStateReducer(AppState state, dynamic action) {
     if (existing == null) {
       return state.copyWith(
         outfits: state.outfits.rebuild((b) => b.add(action.outfit)),
+        newOutfit: new Outfit()
       );
     }
 
     return state.copyWith(
-      outfits: state.outfits.rebuild((b) => b..[state.outfits.indexOf(existing)] = action.outfit)
+      outfits: state.outfits.rebuild((b) => b..[state.outfits.indexOf(existing)] = action.outfit),
+      newOutfit: new Outfit()
     );    
+  } else if (action is UpdateSelectPieceSearchFilter) {
+    return state.copyWith(newOutfitSearchFilter: action.filter);
   }
 
   switch (action.runtimeType) {
