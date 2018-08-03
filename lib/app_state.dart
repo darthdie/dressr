@@ -198,6 +198,7 @@ class UpdateSelectPieceSearchFilter {
 
 OutfitsState outfitsStateReducer(OutfitsState state, dynamic action) {
   if (action is SetCurrentOutfit) {
+    print(action.outfit.name);
     return state.copyWith(
       current: action.outfit
     );
@@ -206,13 +207,11 @@ OutfitsState outfitsStateReducer(OutfitsState state, dynamic action) {
     if (existing == null) {
       return state.copyWith(
         outfits: state.all.rebuild((b) => b.add(action.outfit)),
-        current: new Outfit()
       );
     }
 
     return state.copyWith(
       outfits: state.all.rebuild((b) => b..[state.all.indexOf(existing)] = action.outfit),
-      current: new Outfit()
     );    
   }
 

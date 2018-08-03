@@ -69,7 +69,7 @@ class AccessoriesTab extends StatelessWidget {
             heroTag: 'accessories-tab-fab',
             child: const Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddAccessoryModal()));
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddAccessoryModal(), fullscreenDialog: true));
             },
           ),
         );

@@ -49,7 +49,7 @@ class OutfitsTab extends StatelessWidget {
             heroTag: 'outfits-tab-fab',
             child: const Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddOutfitModal()));
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddOutfitModal(), fullscreenDialog: true));
             },
           ),
         );

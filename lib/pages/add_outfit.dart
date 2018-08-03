@@ -95,7 +95,7 @@ class AddOutfitModal extends StatelessWidget {
         ],
       ),
       onPressed: () async {
-        final id = await await Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new SelectPieceModal()));
+        final id = await await Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new SelectPieceModal(), fullscreenDialog: true));
         if (id != null) {
           viewModel.updateOutfit(viewModel.outfit.copyWith(pieces: viewModel.outfit.pieces.rebuild((b) => b..add(id))));
         }
@@ -109,6 +109,7 @@ class AddOutfitModal extends StatelessWidget {
           const Divider(),
           new ListTile(
             title: new TextField(
+              controller: new TextEditingController.fromValue(new TextEditingValue(text: viewModel.outfit.name, selection: new TextSelection.collapsed(offset: viewModel.outfit.name.length))),
               decoration: new InputDecoration(hintText: 'Name'),
               onChanged: (value) => viewModel.updateOutfit(viewModel.outfit.copyWith(name: value))
             ),
@@ -187,6 +188,7 @@ class _AddOutfitModalViewModel {
   final Function addOutfit;
 
   factory _AddOutfitModalViewModel.create(Store<AppState> store) {
+    print('vm: ' + store.state.outfits.current.name);
     return new _AddOutfitModalViewModel(
       pieces: new BuiltList<Piece>(store.state.outfits.current.pieces.map<Piece>((id) => store.state.getPiece(id))),
       updateOutfit: (outfit) => store.dispatch(new SetCurrentOutfit(outfit)),

@@ -71,7 +71,7 @@ class ShirtsTab extends StatelessWidget {
             heroTag: 'shirts-tab-fab',
             child: const Icon(Icons.add),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddShirtModal()));
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddShirtModal(), fullscreenDialog: true));
             },
           ),
         );

@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:dressr/app_state.dart';
-import 'package:dressr/models/accessory.dart';
 import 'package:dressr/models/outfit.dart';
 import 'package:dressr/models/piece.dart';
-import 'package:dressr/models/shirt.dart';
+import 'package:dressr/pages/add_outfit.dart';
 import 'package:dressr/widgets/piece_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -35,7 +34,8 @@ class ViewOutfitPage extends StatelessWidget {
                     new IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () {
-
+                        viewModel.editOutfit();
+                        Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new AddOutfitModal(), fullscreenDialog: true));
                       },
                     )
                   ],
@@ -61,16 +61,19 @@ class ViewOutfitPage extends StatelessWidget {
 class _OutfitPageViewModel {
   _OutfitPageViewModel({
     this.outfit,
-    this.pieces
+    this.pieces,
+    this.editOutfit,
   });
 
   final Outfit outfit;
   final BuiltList<Piece> pieces;
+  final Function editOutfit;
 
   factory _OutfitPageViewModel.create(Store<AppState> store) {
     return new _OutfitPageViewModel(
       outfit: store.state.outfits.current,
-      pieces: new BuiltList<Piece>(store.state.outfits.current.pieces.map((id) => store.state.pieces.firstWhere((p) => p.id == id)))
+      pieces: new BuiltList<Piece>(store.state.outfits.current.pieces.map((id) => store.state.pieces.firstWhere((p) => p.id == id))),
+      editOutfit: () => store.dispatch(new SetCurrentOutfit(store.state.outfits.current))
     );
   }
 

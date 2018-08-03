@@ -74,53 +74,6 @@ class AddShirtModal extends StatelessWidget {
     );
   }
 
-  Future<String> showAddAccessory(BuildContext context, _AddShirtViewModel viewModel) async {
-    await Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new SelectPieceModal()));
-    return Future.value('');
-    // return showModalBottomSheet<String>(
-    //   context: context,
-    //   builder: (context) {
-    //     return new StoreConnector<AppState, BuiltList<Accessory>>(
-    //       converter: (store) => new BuiltList(store.state.accessories.where((a) => !store.state.newShirt.accessories.contains(a.id))),
-    //       builder: (context, accessories) {
-    //         final accessoryWidgets = accessories.map((a) {
-    //           return new AccessoryTile(
-    //             accessory: a,
-    //             onPressed: () {
-    //               Navigator.of(context).pop(a.id);
-    //             },
-    //           );
-    //         }).toList();
-
-    //         final addItemButton = new FlatButton(
-    //           child: new Row(
-    //             mainAxisAlignment: MainAxisAlignment.center,
-    //             children: <Widget>[
-    //               const Text('Add New'),
-    //               const Icon(Icons.add),
-    //             ]
-    //           ),
-    //           onPressed: () {
-    //             Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddAccessoryModal()));
-    //           }
-    //         );
-
-    //         return new ListView(
-    //           children: <Widget>[
-    //             new ListTile(
-    //               title: new Text('Accessories', style: Theme.of(context).textTheme.title),
-    //               subtitle: new Text('${accessories.length} Accessories'),
-    //             )
-    //           ]
-    //           ..addAll(accessoryWidgets)
-    //           ..add(addItemButton)
-    //         );
-    //       },
-    //     );
-    //   }
-    // );
-  }
-
   Widget _buildBody(BuildContext context, _AddShirtViewModel viewModel) {
     return new Container(
       child: new ListView(
