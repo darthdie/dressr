@@ -66,6 +66,7 @@ class AccessoriesTab extends StatelessWidget {
         return new Scaffold(
           body: _buildBody(context, viewModel),
           floatingActionButton: new FloatingActionButton(
+            heroTag: 'accessories-tab-fab',
             child: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddAccessoryModal()));

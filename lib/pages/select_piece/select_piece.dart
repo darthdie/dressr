@@ -160,7 +160,7 @@ class _SelectPieceModalViewModel {
 
   static BuiltList<Piece> filterPieces(Store<AppState> store, BuiltList<Piece> source) {
     return source.rebuild((b) => b..where((p) {
-      return !store.state.newOutfit.pieces.contains(p.id) &&
+      return !store.state.outfits.current.pieces.contains(p.id) &&
       store.state.selectPieceSearchFilter.isEmpty || p.name.contains(store.state.selectPieceSearchFilter);
     }));
   }

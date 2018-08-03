@@ -2,6 +2,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:dressr/app_state.dart';
 import 'package:dressr/models/outfit.dart';
 import 'package:dressr/pages/add_outfit.dart';
+import 'package:dressr/pages/view_outfit.dart';
 import 'package:dressr/widgets/image_grid_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -10,9 +11,9 @@ import 'package:redux/redux.dart';
 class OutfitsTab extends StatelessWidget {
   const OutfitsTab();
 
-  void handleGridTileTapped(BuildContext context, _OutfitsTabViewModel viewModel, Outfit shirt) {
-    // viewModel.selectShirt(shirt);
-    // Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new ShirtPage()));
+  void handleGridTileTapped(BuildContext context, _OutfitsTabViewModel viewModel, Outfit outfit) {
+    viewModel.selectOutfit(outfit);
+    Navigator.push(context, new MaterialPageRoute(builder: (ctx) => new ViewOutfitPage()));
   }
 
   List<Widget> _buildGridTiles(BuildContext context, _OutfitsTabViewModel viewModel) {
@@ -45,6 +46,7 @@ class OutfitsTab extends StatelessWidget {
         return new Scaffold(
           body: _buildBody(context, viewModel),
           floatingActionButton: new FloatingActionButton(
+            heroTag: 'outfits-tab-fab',
             child: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddOutfitModal()));
@@ -59,13 +61,18 @@ class OutfitsTab extends StatelessWidget {
 class _OutfitsTabViewModel {
   _OutfitsTabViewModel({
     this.outfits,
+    this.selectOutfit
   });
 
   final BuiltList<Outfit> outfits;
+  final SelectOutfitFunction selectOutfit;
 
   factory _OutfitsTabViewModel.create(Store<AppState> store) {
     return new _OutfitsTabViewModel(
-      outfits: store.state.outfits
+      outfits: store.state.outfits.all,
+      selectOutfit: (outfit) => store.dispatch(new SetCurrentOutfit(outfit))
     );
   }
 }
+
+typedef SelectOutfitFunction = Function(Outfit);

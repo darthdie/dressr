@@ -188,12 +188,24 @@ class _AddOutfitModalViewModel {
 
   factory _AddOutfitModalViewModel.create(Store<AppState> store) {
     return new _AddOutfitModalViewModel(
-      pieces: new BuiltList<Piece>(store.state.newOutfit.pieces.map<Piece>((id) => store.state.getPiece(id))),
-      updateOutfit: (outfit) => store.dispatch(new UpdateNewOutfit(outfit)),
-      outfit: store.state.newOutfit,
-      addOutfit: () => store.dispatch(new AddOrUpdateOutfit(store.state.newOutfit)),
+      pieces: new BuiltList<Piece>(store.state.outfits.current.pieces.map<Piece>((id) => store.state.getPiece(id))),
+      updateOutfit: (outfit) => store.dispatch(new SetCurrentOutfit(outfit)),
+      outfit: store.state.outfits.current,
+      addOutfit: () => store.dispatch(new AddOrUpdateOutfit(store.state.outfits.current)),
     );
   }
+
+  @override
+  operator ==(o) =>
+    identical(this, o) ||
+    o is _AddOutfitModalViewModel &&
+    pieces == o.pieces &&
+    outfit == o.outfit;
+
+  @override
+  int get hashCode =>
+    pieces.hashCode ^
+    outfit.hashCode;
 }
 
 typedef PieceCallback = Function(String);
